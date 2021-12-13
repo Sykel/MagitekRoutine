@@ -75,6 +75,9 @@ namespace Magitek.Rotations
             if (!Core.Me.HasTarget || !Core.Me.CurrentTarget.ThoroughCanAttack())
                 return false;
 
+            if (Core.Me.CurrentTarget.HasAnyAura(Auras.Invincibility))
+                return false;
+
             if (await CustomOpenerLogic.Opener()) return true;
 
             if (!Core.Me.HasAura(Auras.PassageOfArms))
@@ -93,8 +96,8 @@ namespace Magitek.Rotations
                     if (await Buff.FightOrFlight()) return true;
                     if (!Utilities.Routines.Paladin.OGCDHold)
                     {
-                        if (await SingleTarget.SpiritsWithin()) return true;
                         if (await Aoe.CircleofScorn()) return true;
+                        if (await SingleTarget.SpiritsWithin()) return true;
                         if (await SingleTarget.Intervene()) return true;
                     }
                     if (await Buff.Sheltron()) return true;

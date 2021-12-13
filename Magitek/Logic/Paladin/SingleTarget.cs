@@ -97,7 +97,7 @@ namespace Magitek.Logic.Paladin
                 return false;
 
             if (!Core.Me.CurrentTarget.HasAura(Auras.GoringBlade, true,
-                1900) || Core.Me.HasAuraCharge(Auras.SwordOath))
+                19000) || Core.Me.HasAuraCharge(Auras.SwordOath))
                 return false;
 
             if (PaladinSettings.Instance.FoFFirst && Spells.FightorFlight.Cooldown.Seconds < 8 && !Core.Me.CurrentTarget.HasAura(Auras.GoringBlade, true, 10000))

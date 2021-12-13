@@ -168,7 +168,9 @@ namespace Magitek.Extensions
 
         public static IEnumerable<BattleCharacter> EnemiesNearby(this GameObject unit, float distance)
         {
-            return Combat.Enemies.Where(r => r.Distance(unit) <= distance);
+            //Core.Me.CombatReach + Core.Me.CurrentTarget.CombatReach;
+
+            return Combat.Enemies.Where(r => r.Distance(unit) <= distance + Core.Me.CombatReach + unit.CombatReach);
         }
 
         public static IEnumerable<BattleCharacter> EnemiesNearbyOoc(this GameObject unit, float distance)
@@ -210,30 +212,6 @@ namespace Magitek.Extensions
             return gameObject != null && RangedDps.Contains(gameObject.CurrentJob);
         }
 
-        public static bool IsBlueMage(this GameObject unit)
-        {
-            var gameObject = unit as Character;
-            return gameObject != null && ClassJobType.BlueMage.Equals(gameObject.CurrentJob);
-        }
-
-        public static bool IsBlueMageHealer(this GameObject unit)
-        {
-            var gameObject = unit as Character;
-            return gameObject != null && ClassJobType.BlueMage.Equals(gameObject.CurrentJob) && gameObject.HasAura(Auras.AetherialMimicryHealer);
-        }
-
-        public static bool IsBlueMageTank(this GameObject unit)
-        {
-            var gameObject = unit as Character;
-            return gameObject != null && ClassJobType.BlueMage.Equals(gameObject.CurrentJob) && gameObject.HasAura(Auras.AetherialMimicryTank);
-        }
-
-        public static bool IsBlueMageDps(this GameObject unit)
-        {
-            var gameObject = unit as Character;
-            return gameObject != null && ClassJobType.BlueMage.Equals(gameObject.CurrentJob) && gameObject.HasAura(Auras.AetherialMimicryDps);
-        }
-
         public static bool IsRangedDpsCard(this GameObject unit)
         {
             var gameObject = unit as Character;
@@ -248,13 +226,7 @@ namespace Magitek.Extensions
 
         public static bool HasMyRegen(this GameObject unit)
         {
-            return unit.HasAnyAura(new uint[]
-            {
-                Auras.Regen,
-                Auras.Regen2,
-                Auras.AspectedBenefic,
-                Auras.AspectedHelios
-            });
+            return unit.HasAura(Auras.Regen, true) || unit.HasAura(Auras.Regen2) || unit.HasAura(Auras.AspectedBenefic, true);
         }
 
         public static bool HealthCheck(this GameObject tar, int healthSetting, float healthSettingPercent)

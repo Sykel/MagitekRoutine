@@ -172,6 +172,8 @@ namespace Magitek.Logic.Bard
 
         public static bool IsValidTargetToApplyDoT(BattleCharacter unit, uint spell)
         {
+            unit.HasAnyAura(Auras.Invincibility);
+
             if (unit == Core.Me.CurrentTarget)
                 return false;
             if (!unit.InLineOfSight())

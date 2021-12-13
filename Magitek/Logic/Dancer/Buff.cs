@@ -47,7 +47,10 @@ namespace Magitek.Logic.Dancer
             if (DancerSettings.Instance.DevilmentWithTechnicalStep && !Core.Me.HasAura(Auras.StandardFinish))
                 return false;
 
-            return await Spells.Devilment.Cast(Core.Me);
+            if (DancerSettings.Instance.DevilmentWithTechnicalStep)
+                return await Spells.Devilment.Cast(Core.Me);
+
+            return false;
         }
 
         public static async Task<bool> CuringWaltz()
@@ -93,6 +96,9 @@ namespace Magitek.Logic.Dancer
                 return false;
 
             if (Core.Me.HasAnyAura(FlourishingAuras))
+                return false;
+
+            if (Spells.TechnicalStep.Cooldown < TimeSpan.FromSeconds(1.5) || Casting.LastSpell == Spells.TechnicalStep)
                 return false;
 
             return await Spells.Flourish.Cast(Core.Me);

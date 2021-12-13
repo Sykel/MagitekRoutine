@@ -24,7 +24,7 @@ namespace Magitek.Logic.RedMage
 
             if (RedMageSettings.Instance.VercureOnlyDualCast)
             {
-                if (!Core.Me.HasAura(Auras.Dualcast))
+                if (Core.Me.HasAura(Auras.Dualcast))
                     return false;
             }
 
@@ -84,13 +84,10 @@ namespace Magitek.Logic.RedMage
             if (!Core.Me.HasAura(Auras.Dualcast))
                 return false;
 
-            if (!Globals.InParty)
-                return false;
-
             if (!Core.Me.InCombat)
                 return false;
 
-            var verraiseTarget = Group.DeadAllies.FirstOrDefault(CanVerraise);
+            var verraiseTarget = Group.DeadStrangers.Concat(Group.DeadAllies).FirstOrDefault(CanVerraise);
 
             if (verraiseTarget == null)
                 return false;

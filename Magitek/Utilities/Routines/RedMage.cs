@@ -53,7 +53,7 @@ namespace Magitek.Utilities.Routines
                                              && RedMageSettings.Instance.CorpsACorps
                                              && (   !RedMageSettings.Instance.CorpsACorpsInMeleeRangeOnly
                                                  || (   Core.Me.CurrentTarget != null
-                                                     && Core.Me.CurrentTarget.Distance(Core.Me) <= 2 + Core.Me.CurrentTarget.CombatReach));
+                                                     && Core.Me.CurrentTarget.Distance(Core.Me) <= 3 + Core.Me.CurrentTarget.CombatReach));
 
         public static bool EngagementEnabled => RedMageSettings.Instance.UseMelee && RedMageSettings.Instance.Engagement;
 
@@ -293,9 +293,54 @@ namespace Magitek.Utilities.Routines
             { Auras.Manafication,  Spells.Manafication.LevelAcquired }
         };
 
-        public static bool MeHasAura(uint aura) => SmUtil.SyncedLevel < AuraLevelsAcquiredDict[aura] ? false : Core.Me.HasAura(aura);
+        public static bool HelperHasAura(uint aura)
+        {
+            if (aura == Auras.Dualcast && Core.Me.HasAura(Auras.Swiftcast)) 
+            {
+                return true;
+            }
+            else if (aura == Auras.Dualcast && Core.Me.HasAura("Lost Chainspell"))
+            {
+                return true;
+            }
+            return Core.Me.HasAura(aura);
+        }
+
+        public static bool HelperHasAnyAura(List<uint> auras, bool isMyAura = false, int msLeft = 0)
+        {
+            if (auras.Contains(Auras.Dualcast) && Core.Me.HasAura(Auras.Swiftcast))
+            {
+                return true;
+            }
+            else if (auras.Contains(Auras.Dualcast) && Core.Me.HasAura("Lost Chainspell"))
+            {
+                return true;
+            }
+
+            return isMyAura
+                ? Core.Me.CharacterAuras.Any(r => r.CasterId == Core.Player.ObjectId && auras.Contains(r.Id) && r.TimespanLeft.TotalMilliseconds >= msLeft)
+                : Core.Me.CharacterAuras.Any(r => auras.Contains(r.Id) && r.TimespanLeft.TotalMilliseconds >= msLeft);
+        }
+
+        public static bool HelperHasAllAuras(List<uint> auras, bool areMyAuras = false, int msLeft = 0)
+        {
+            if (auras.Contains(Auras.Dualcast) && Core.Me.HasAura(Auras.Swiftcast))
+            {
+                auras.Remove(Auras.Dualcast);
+            }
+            else if (auras.Contains(Auras.Dualcast) && Core.Me.HasAura("Lost Chainspell"))
+            {
+                auras.Remove(Auras.Dualcast);
+            }
+
+            return areMyAuras
+                ? Core.Me.CharacterAuras.Where(x => x.CasterId == Core.Player.ObjectId && (x.TimespanLeft.TotalMilliseconds >= msLeft || x.TimespanLeft.TotalMilliseconds < 0)).Select(r => r.Id).ToList().Intersect(auras).Count() == auras.Count
+                : Core.Me.CharacterAuras.Where(x => (x.TimespanLeft.TotalMilliseconds >= msLeft || x.TimespanLeft.TotalMilliseconds < 0)).Select(r => r.Id).ToList().Intersect(auras).Count() == auras.Count;
+        }
+
+        public static bool MeHasAura(uint aura) => SmUtil.SyncedLevel < AuraLevelsAcquiredDict[aura] ? false : HelperHasAura(aura);
         public static bool MeHasAnyAura(List<uint> auras) => Core.Me.HasAnyAura(auras.Where(a => SmUtil.SyncedLevel >= AuraLevelsAcquiredDict[a]).ToList());
-        public static bool MeHasAllAuras(List<uint> auras) => auras.Any(a => SmUtil.SyncedLevel < AuraLevelsAcquiredDict[a]) ? false : Core.Me.HasAllAuras(auras.Where(a => SmUtil.SyncedLevel >= AuraLevelsAcquiredDict[a]).ToList());
+        public static bool MeHasAllAuras(List<uint> auras) => auras.Any(a => SmUtil.SyncedLevel < AuraLevelsAcquiredDict[a]) ? false : HelperHasAllAuras(auras.Where(a => SmUtil.SyncedLevel >= AuraLevelsAcquiredDict[a]).ToList());
         #endregion
     }
 }

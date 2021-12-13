@@ -34,6 +34,7 @@ namespace Magitek.Utilities
 
         public static void UpdateAllies(Action extensions = null)
         {
+            DeadStrangers.Clear();
             DeadAllies.Clear();
             CastableTanks.Clear();
             CastableAlliesWithin30.Clear();
@@ -129,6 +130,26 @@ namespace Magitek.Utilities
                 if (distance <= 10) { CastableAlliesWithin10.Add(ally); }
             }
 
+            foreach (var ally in GameObjectManager.GetObjectsOfType<BattleCharacter>().Where(r => !r.CanAttack && !r.IsNpc))
+            {
+                //if (!ally.IsTargetable || !ally.InLineOfSight() || ally.Icon == PlayerIcon.Viewing_Cutscene)
+                //TODO: This is a temporary fix for wrong PlayerIcon Enum: 15 = Viewing_Cutscene
+                if (!ally.IsTargetable || !ally.InLineOfSight() || ally.Icon == (PlayerIcon)15)
+                    continue;
+
+                if (BaseSettings.Instance.PartyMemberAuraHistory)
+                {
+                    UpdatePartyMemberHistory(ally);
+                }
+
+                if ((ally.CurrentHealth <= 0 || ally.IsDead)
+                    && DeadAllies.Contains(ally) == false)
+                {
+                    DeadStrangers.Add(ally);
+                    continue;
+                }
+            }
+
             extensions?.Invoke();
         }
 
@@ -145,6 +166,7 @@ namespace Magitek.Utilities
             }
         }
 
+        public static readonly List<Character> DeadStrangers = new List<Character>();
         public static readonly List<Character> DeadAllies = new List<Character>();
         public static readonly List<Character> CastableTanks = new List<Character>();
         public static readonly List<Character> CastableAlliesWithin30 = new List<Character>();

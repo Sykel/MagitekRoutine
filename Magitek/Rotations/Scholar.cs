@@ -84,39 +84,43 @@ namespace Magitek.Rotations
             if (await Logic.Scholar.Heal.ForceIndom()) return true;
             if (await Logic.Scholar.Heal.ForceExcog()) return true;
             
-            if (await Buff.Aetherflow()) return true;
-            if (await Buff.LucidDreaming()) return true;
             if (await Dispel.Execute()) return true;
-
-            if (Globals.InParty)
-            {
-                if (await Buff.DeploymentTactics()) return true;
-                if (await Buff.Aetherpact()) return true;
-                if (await Buff.BreakAetherpact()) return true;
-            }
-
-            if (await Buff.ChainStrategem()) return true;
 
             #endregion
 
-            if (await Logic.Scholar.Heal.Excogitation()) return true;
-            if (await Logic.Scholar.Heal.Lustrate()) return true;
-
-            if (Core.Me.Pet != null && Core.Me.InCombat)
+            if (Weaving.GetCurrentWeavingCounter() < 2 && Spells.Ruin.Cooldown.TotalMilliseconds >
+                650 + BaseSettings.Instance.UserLatencyOffset)
             {
-                if (await Logic.Scholar.Heal.FeyBlessing()) return true;
-                if (await Logic.Scholar.Heal.WhisperingDawn()) return true;
-                if (await Logic.Scholar.Heal.FeyIllumination()) return true;
-                if (await Logic.Scholar.Heal.SummonSeraph()) return true;
-                if (await Logic.Scholar.Heal.Consolation()) return true;
+                if (Core.Me.Pet != null && Core.Me.InCombat)
+                {
+                    if (await Logic.Scholar.Heal.FeyBlessing()) return true;
+                    if (await Logic.Scholar.Heal.WhisperingDawn()) return true;
+                    if (await Logic.Scholar.Heal.FeyIllumination()) return true;
+                    if (await Logic.Scholar.Heal.SummonSeraph()) return true;
+                    if (await Logic.Scholar.Heal.Consolation()) return true;
+                    if (await Buff.Aetherpact()) return true;
+                    if (await Buff.BreakAetherpact()) return true;
+                }
+
+                if (Globals.InParty)
+                {
+                    if (await Logic.Scholar.Heal.Indomitability()) return true;
+                    if (await Logic.Scholar.Heal.SacredSoil()) return true;
+                    if (await Buff.DeploymentTactics()) return true;
+                }
+
+                if (await Logic.Scholar.Heal.Excogitation()) return true;
+                if (await Logic.Scholar.Heal.Lustrate()) return true;
+
+                if (await Buff.Aetherflow()) return true;
+                if (await Buff.ChainStrategem()) return true;
+                if (await Buff.LucidDreaming()) return true;
             }
 
             if (Globals.InParty)
             {
-                if (await Logic.Scholar.Heal.Indomitability()) return true;
                 if (await Logic.Scholar.Heal.EmergencyTacticsSuccor()) return true;
                 if (await Logic.Scholar.Heal.Succor()) return true;
-                if (await Logic.Scholar.Heal.SacredSoil()) return true;
             }
 
             if (await Logic.Scholar.Heal.EmergencyTacticsAdloquium()) return true;
@@ -176,13 +180,17 @@ namespace Magitek.Rotations
                     return true;
             }
 
-            if (await Aoe.ArtOfWar()) return true;
-
             if (!Core.Me.HasTarget || !Core.Me.CurrentTarget.ThoroughCanAttack())
                 return false;
 
-            if (await SingleTarget.Bio()) return true;
             if (await SingleTarget.BioMultipleTargets()) return true;
+
+            if (await Aoe.ArtOfWar()) return true;
+
+            if (Core.Me.CurrentTarget.HasAnyAura(Auras.Invincibility))
+                return false;
+
+            if (await SingleTarget.Bio()) return true;
             if (await SingleTarget.Ruin2()) return true;
             if (await SingleTarget.EnergyDrain2()) return true;
             return await SingleTarget.Broil();

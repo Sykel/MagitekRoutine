@@ -59,12 +59,20 @@ namespace Magitek.Logic.Dancer
             SpellQueueLogic.SpellQueue.Clear();
             SpellQueueLogic.CancelSpellQueue = () => !Core.Me.HasAura(Auras.StandardStep);
 
+            Boolean currentStepFound = false;
+
             foreach (var step in ActionResourceManager.Dancer.Steps)
             {
                 SpellData danceStep;
 
                 Logger.Write($@"[Magitek] Dance Log {step}");
 
+                if (!step.Equals(ActionResourceManager.Dancer.CurrentStep) && !currentStepFound)
+                {
+                    continue;
+                }
+
+                currentStepFound = true;
                 switch (step)
                 {
                     case ActionResourceManager.Dancer.DanceStep.Finish:
@@ -152,9 +160,18 @@ namespace Magitek.Logic.Dancer
             SpellQueueLogic.SpellQueue.Clear();
             SpellQueueLogic.CancelSpellQueue = () => !Core.Me.HasAura(Auras.TechnicalStep);
 
+            Boolean currentStepFound = false;
+
             foreach (var step in ActionResourceManager.Dancer.Steps)
             {
                 SpellData danceStep;
+
+                if (!step.Equals(ActionResourceManager.Dancer.CurrentStep) && !currentStepFound)
+                {
+                    continue;
+                }
+
+                currentStepFound = true;
 
                 switch (step)
                 {

@@ -41,17 +41,5 @@ namespace Magitek.Extensions
                                                         Auras.LadyofCrowns2
             });
         }
-
-        public static bool HasAnyHealerRegen(this Character unit)
-        {
-            return unit.HasAnyAura(new uint[]
-            {
-                Auras.Regen,
-                Auras.Regen2,
-                Auras.Medica2,
-                Auras.AspectedBenefic,
-                Auras.AspectedHelios
-            });
-        }
     }
 }

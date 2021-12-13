@@ -90,6 +90,9 @@ namespace Magitek.Rotations
             if (!Core.Me.HasTarget || !Core.Me.CurrentTarget.ThoroughCanAttack())
                 return false;
 
+            if (Core.Me.CurrentTarget.HasAnyAura(Auras.Invincibility))
+                return false;
+
             if (await PhysicalDps.Interrupt(NinjaSettings.Instance)) return true;
 
             //if (Core.Me.HasAura(Auras.TenChiJin))
@@ -154,8 +157,8 @@ namespace Magitek.Rotations
                 if (await SingleTarget.TrickAttack()) return true;
                 if (await Ninjutsu.TenChiJin()) return true;
                 if (await Buff.Meisui()) return true;
-                //if (await Buff.TrueNorth()) return true;
-                //if (await Buff.ShadeShift()) return true;
+                if (await Buff.TrueNorth()) return true;
+                if (await Buff.ShadeShift()) return true;
                 if (await Buff.Bunshin()) return true;
                 if (await SingleTarget.Assassinate()) return true;
                 if (await Aoe.HellfrogMedium()) return true;
@@ -164,6 +167,7 @@ namespace Magitek.Rotations
                 if (await Buff.Kassatsu()) return true;
                 if (await SingleTarget.DreamWithinADream()) return true;
             }
+            if (await SingleTarget.ShadowFang()) return true;
 
             //Ninjutsu
             if (NinjutsuCheck())

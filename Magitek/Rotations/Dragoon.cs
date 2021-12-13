@@ -85,6 +85,9 @@ namespace Magitek.Rotations
             if (!Core.Me.CurrentTarget.ThoroughCanAttack())
                 return false;
 
+            if (Core.Me.CurrentTarget.HasAnyAura(Auras.Invincibility))
+                return false;
+
             if (await CustomOpenerLogic.Opener()) return true;
 
             #region Positional Overlay
@@ -210,7 +213,7 @@ namespace Magitek.Rotations
             if (await SingleTarget.WheelingThrust()) return true;
             if (await SingleTarget.FangAndClaw()) return true;
 
-            if (DragoonSettings.Instance.Aoe && Core.Me.CurrentTarget.EnemiesNearby(8).Count() >= DragoonSettings.Instance.AoeEnemies && Core.Me.ClassLevel >= Spells.DoomSpike.LevelAcquired)
+            if (DragoonSettings.Instance.Aoe && Core.Me.EnemiesInCone(8) >= DragoonSettings.Instance.AoeEnemies && Core.Me.ClassLevel >= Spells.DoomSpike.LevelAcquired)
             {
                 if (await Aoe.CoethanTorment()) return true;
                 if (await Aoe.SonicThrust()) return true;
